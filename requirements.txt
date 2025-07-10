@@ -1,0 +1,12 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+
+# ORM va baza
+SQLAlchemy==2.0.30
+psycopg[binary]==3.2.9
+
+# Config va .env
+python-dotenv==1.0.1
+
+# Migrations
+alembic==1.13.1
