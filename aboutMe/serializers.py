@@ -18,13 +18,21 @@ class AboutMeSerializer(serializers.ModelSerializer):
     def get_profile_image_url(self, obj):
         request = self.context.get("request")
         if obj.profile_image and hasattr(obj.profile_image, "url"):
-            return request.build_absolute_uri(obj.profile_image.url) if request else obj.profile_image.url
+            return (
+                request.build_absolute_uri(obj.profile_image.url)
+                if request
+                else obj.profile_image.url
+            )
         return None
 
     def get_resume_url(self, obj):
         request = self.context.get("request")
         if obj.resume and hasattr(obj.resume, "url"):
-            return request.build_absolute_uri(obj.resume.url) if request else obj.resume.url
+            return (
+                request.build_absolute_uri(obj.resume.url)
+                if request
+                else obj.resume.url
+            )
         return None
 
 
@@ -44,5 +52,7 @@ class SkillSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         request = self.context.get("request")
         if obj.image and hasattr(obj.image, "url"):
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            return (
+                request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            )
         return None

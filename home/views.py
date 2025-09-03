@@ -16,6 +16,7 @@ class HomeView(APIView):
     - Last 3 posts
     - Last 3 projects
     """
+
     def get(self, request, *args, **kwargs):
         home_content = Home.objects.first()  # Default bitta content bo‘ladi
         home_data = HomeSerializer(home_content).data if home_content else None
@@ -23,11 +24,17 @@ class HomeView(APIView):
         last_posts = Post.objects.order_by("-created_at")[:3]
         last_projects = Project.objects.order_by("-created_at")[:3]
 
-        posts_data = PostSerializer(last_posts, many=True, context={"request": request}).data
-        projects_data = ProjectSerializer(last_projects, many=True, context={"request": request}).data
+        posts_data = PostSerializer(
+            last_posts, many=True, context={"request": request}
+        ).data
+        projects_data = ProjectSerializer(
+            last_projects, many=True, context={"request": request}
+        ).data
 
-        return Response({
-            "home": home_data,
-            "last_posts": posts_data,
-            "last_projects": projects_data
-        })
+        return Response(
+            {
+                "home": home_data,
+                "last_posts": posts_data,
+                "last_projects": projects_data,
+            }
+        )

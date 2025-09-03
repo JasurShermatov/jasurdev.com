@@ -160,7 +160,7 @@ const Projects = () => {
                   className="animate-scale-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <ProjectCard {...project} />
+                  {/*<ProjectCard {...project} />*/}
                 </div>
               ))}
             </div>

@@ -14,10 +14,9 @@ class Home(models.Model):
     Home page hero/intro model.
     Foydalanuvchiga landing page uchun rasm va optional text beradi.
     """
+
     hero_image = models.ImageField(
-        upload_to=hero_image_upload_path,
-        blank=True,
-        null=True
+        upload_to=hero_image_upload_path, blank=True, null=True
     )
     hero_text = models.TextField(blank=True, null=True, max_length=500)
 

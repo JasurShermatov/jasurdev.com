@@ -1,13 +1,17 @@
 from django.db import models
 
+
 def resume_upload_path(instance, filename):
     return f"about_me/resume/{filename}"
+
 
 def profile_image_upload_path(instance, filename):
     return f"about_me/profile/{filename}"
 
+
 def skill_image_upload_path(instance, filename):
     return f"about_me/skills/{filename}"
+
 
 class AboutMe(models.Model):
     """
@@ -17,7 +21,10 @@ class AboutMe(models.Model):
 
     intro_text = models.TextField(blank=True, help_text="Short intro about yourself")
     resume = models.FileField(
-        upload_to=resume_upload_path, blank=True, null=True, help_text="Upload your resume"
+        upload_to=resume_upload_path,
+        blank=True,
+        null=True,
+        help_text="Upload your resume",
     )
     profile_image = models.ImageField(
         upload_to=profile_image_upload_path, blank=True, null=True
@@ -43,8 +50,12 @@ class Skill(models.Model):
 
     name = models.CharField(max_length=100)
     image = models.ImageField(upload_to=skill_image_upload_path, blank=True, null=True)
-    experience_years = models.PositiveSmallIntegerField(default=0, help_text="Years of experience")
-    proficiency = models.PositiveSmallIntegerField(default=0, help_text="Proficiency in % (0-100)")
+    experience_years = models.PositiveSmallIntegerField(
+        default=0, help_text="Years of experience"
+    )
+    proficiency = models.PositiveSmallIntegerField(
+        default=0, help_text="Proficiency in % (0-100)"
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

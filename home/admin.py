@@ -8,4 +8,5 @@ class HomeAdmin(admin.ModelAdmin):
 
     def hero_text_short(self, obj):
         return (obj.hero_text[:50] + "...") if obj.hero_text else "-"
+
     hero_text_short.short_description = "Hero Text"

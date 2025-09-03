@@ -8,6 +8,7 @@ class AboutMeView(generics.RetrieveAPIView):
     Singleton About Me view.
     Foydalanuvchi faqat o'qishi mumkin.
     """
+
     serializer_class = AboutMeSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -22,6 +23,7 @@ class SkillListView(generics.ListAPIView):
     Barcha skill / technologies ro'yxati.
     Frontend uchun.
     """
+
     queryset = Skill.objects.all().order_by("-proficiency")
     serializer_class = SkillSerializer
     permission_classes = [permissions.AllowAny]
