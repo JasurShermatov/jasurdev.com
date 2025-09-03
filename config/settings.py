@@ -35,9 +35,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",  # << shu yuqoriroq bo'lishi kerak
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -122,6 +122,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://web",  # Docker network frontend
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Static files
 STATIC_URL = "/static/"
