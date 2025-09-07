@@ -1,7 +1,42 @@
+// API Base Configuration
 const API_BASE_URL = 'http://localhost:8080/api';
 
-// Types based on your API schema
-export interface Tag {
+// Types based on Swagger definitions
+export interface AboutMe {
+  intro_text: string;
+  profile_image_url: string;
+  resume_url: string;
+}
+
+export interface Skill {
+  id: number;
+  name: string;
+  image_url: string;
+  experience_years: number;
+  proficiency: number;
+}
+
+export interface Experience {
+  id: number;
+  title: string;
+  company: string;
+  description: string;
+  start_year: number;
+  end_year?: number;
+  link?: string;
+  period: string;
+}
+
+export interface Certificate {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  link?: string;
+  obtained_year?: number;
+}
+
+export interface PostTag {
   id: number;
   name: string;
 }
@@ -12,23 +47,28 @@ export interface PostComment {
   created_at: string;
 }
 
-export interface ProjectComment {
-  id: number;
-  content: string;
-  created_at: string;
-}
-
 export interface Post {
   id: number;
   title: string;
   content: string;
   image?: string;
-  tags: Tag[];
+  tags: PostTag[];
   likes_count: number;
   comments_count: number;
   comments: PostComment[];
   created_at: string;
   updated_at: string;
+}
+
+export interface ProjectTag {
+  id: number;
+  name: string;
+}
+
+export interface ProjectComment {
+  id: number;
+  content: string;
+  created_at: string;
 }
 
 export interface Project {
@@ -39,7 +79,7 @@ export interface Project {
   github_link?: string;
   live_demo_link?: string;
   owner: number;
-  tags: Tag[];
+  tags: ProjectTag[];
   likes_count: number;
   comments_count: number;
   comments: ProjectComment[];
@@ -47,71 +87,42 @@ export interface Project {
   updated_at: string;
 }
 
-export interface Skill {
-  id: number;
-  name: string;
-  image_url?: string;
-  experience_years: number;
-  proficiency: number;
-}
-
-export interface AboutMe {
-  intro_text: string;
-  profile_image_url?: string;
-  resume_url?: string;
-}
-
-export interface HomeData {
-  hero_content?: {
-    title?: string;
-    subtitle?: string;
-    image?: string;
-  };
-  latest_posts: Post[];
-  latest_projects: Project[];
-}
-
-// API Service Class
+// API Client Class
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
-    
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options?.headers,
-        },
-        ...options,
-      });
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+      ...options,
+    });
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API Request failed:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
+
+    return response.json();
   }
 
-  // Home page data
-  async getHomeData(): Promise<HomeData> {
-    return this.request<HomeData>('/home/');
-  }
-
-  // About Me data
+  // About Me API
   async getAboutMe(): Promise<AboutMe> {
     return this.request<AboutMe>('/about-me/');
   }
 
-  // Skills data
   async getSkills(): Promise<Skill[]> {
     return this.request<Skill[]>('/about-me/skills/');
   }
 
-  // Posts
+  async getExperiences(): Promise<Experience[]> {
+    return this.request<Experience[]>('/about-me/experiences/');
+  }
+
+  async getCertificates(): Promise<Certificate[]> {
+    return this.request<Certificate[]>('/about-me/certificates/');
+  }
+
+  // Posts API
   async getPosts(): Promise<Post[]> {
     return this.request<Post[]>('/posts/');
   }
@@ -121,19 +132,17 @@ class ApiService {
   }
 
   async likePost(id: number): Promise<void> {
-    return this.request<void>(`/posts/${id}/like/`, {
-      method: 'POST',
-    });
+    await this.request(`/posts/${id}/like/`, { method: 'POST' });
   }
 
-  async addPostComment(id: number, content: string): Promise<PostComment> {
-    return this.request<PostComment>(`/posts/${id}/comments/`, {
+  async addPostComment(postId: number, content: string): Promise<PostComment> {
+    return this.request<PostComment>(`/posts/${postId}/comments/`, {
       method: 'POST',
       body: JSON.stringify({ content }),
     });
   }
 
-  // Projects
+  // Projects API
   async getProjects(): Promise<Project[]> {
     return this.request<Project[]>('/projects/');
   }
@@ -143,13 +152,11 @@ class ApiService {
   }
 
   async likeProject(id: number): Promise<void> {
-    return this.request<void>(`/projects/${id}/like/`, {
-      method: 'POST',
-    });
+    await this.request(`/projects/${id}/like/`, { method: 'POST' });
   }
 
-  async addProjectComment(id: number, content: string): Promise<ProjectComment> {
-    return this.request<ProjectComment>(`/projects/${id}/comments/`, {
+  async addProjectComment(projectId: number, content: string): Promise<ProjectComment> {
+    return this.request<ProjectComment>(`/projects/${projectId}/comments/`, {
       method: 'POST',
       body: JSON.stringify({ content }),
     });

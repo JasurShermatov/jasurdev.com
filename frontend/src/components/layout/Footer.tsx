@@ -1,137 +1,108 @@
-import { Github, Linkedin, Mail, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { Github, Send, Mail, Code2 } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
+export const Footer: React.FC = () => {
+  const { t } = useLanguage();
 
   const socialLinks = [
-    { 
-      name: 'GitHub', 
-      icon: Github, 
-      url: 'https://github.com/jasurdev',
-      color: 'hover:text-primary'
+    {
+      name: 'GitHub',
+      href: 'https://github.com/JasurShermatov/',
+      icon: Github,
+      color: 'hover:text-primary',
     },
-    { 
-      name: 'LinkedIn', 
-      icon: Linkedin, 
-      url: 'https://linkedin.com/in/jasurdev',
-      color: 'hover:text-blue-400'
+    {
+      name: 'Telegram',
+      href: 'https://t.me/jasur_shermatov',
+      icon: Send,
+      color: 'hover:text-accent',
     },
-    { 
-      name: 'Email', 
-      icon: Mail, 
-      url: 'mailto:admin@jasurdev.uz',
-      color: 'hover:text-green-400'
-    }
+    {
+      name: 'Email',
+      href: 'mailto:shermatovjasur800@gmail.com',
+      icon: Mail,
+      color: 'hover:text-warning',
+    },
   ];
 
   return (
-    <footer className="bg-secondary/50 border-t border-border/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Brand Section */}
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <span className="text-2xl font-bold gradient-text">JasurDev</span>
+    <footer className="bg-card border-t border-border mt-20">
+      <div className="container mx-auto px-4 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Brand Section */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <div className="bg-gradient-primary p-2 rounded-lg shadow-glow">
+                <Code2 className="h-5 w-5 text-primary-foreground" />
               </div>
-              <p className="text-muted-foreground mb-6 max-w-md">
-                Full Stack Developer specializing in modern web technologies. 
-                Building scalable applications with Python, React, and Django.
-              </p>
-              <div className="flex space-x-4">
-                {socialLinks.map((link) => {
-                  const IconComponent = link.icon;
-                  return (
-                    <Button
-                      key={link.name}
-                      variant="ghost"
-                      size="sm"
-                      asChild
-                      className={`transition-smooth ${link.color}`}
-                    >
-                      <a 
-                        href={link.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        aria-label={link.name}
-                      >
-                        <IconComponent className="h-5 w-5" />
-                      </a>
-                    </Button>
-                  );
-                })}
-              </div>
+              <span className="font-bold text-lg gradient-text">JasurDev</span>
             </div>
+            <p className="text-muted-foreground leading-relaxed">
+              Passionate software engineer creating innovative solutions with modern technologies.
+            </p>
+          </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
-                Quick Links
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/" className="text-muted-foreground hover:text-primary transition-smooth">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="/about-me" className="text-muted-foreground hover:text-primary transition-smooth">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="/projects" className="text-muted-foreground hover:text-primary transition-smooth">
-                    Projects
-                  </a>
-                </li>
-                <li>
-                  <a href="/posts" className="text-muted-foreground hover:text-primary transition-smooth">
-                    Blog
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact Info */}
-            <div>
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
-                Contact
-              </h3>
-              <ul className="space-y-3">
-                <li>
-                  <a 
-                    href="mailto:admin@jasurdev.uz" 
-                    className="text-muted-foreground hover:text-primary transition-smooth flex items-center"
-                  >
-                    admin@jasurdev.uz
-                    <ExternalLink className="h-3 w-3 ml-1" />
-                  </a>
-                </li>
-                <li>
-                  <span className="text-muted-foreground">
-                    Available for freelance projects
+          {/* Contact Section */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg text-foreground">{t('footer.contact')}</h3>
+            <div className="space-y-3">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center space-x-3 text-muted-foreground transition-colors duration-200 ${link.color} group`}
+                >
+                  <link.icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+                  <span className="font-medium">
+                    {link.name === 'GitHub' && '@JasurShermatov'}
+                    {link.name === 'Telegram' && '@jasur_shermatov'}
+                    {link.name === 'Email' && 'shermatovjasur800@gmail.com'}
                   </span>
-                </li>
-              </ul>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Additional Info */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg text-foreground">Technologies</h3>
+            <div className="flex flex-wrap gap-2">
+              {['React', 'TypeScript', 'Node.js', 'Python', 'Django'].map((tech) => (
+                <span
+                  key={tech}
+                  className="px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm font-medium"
+                >
+                  {tech}
+                </span>
+              ))}
             </div>
           </div>
         </div>
 
+        {/* Floating Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="floating-element absolute top-10 right-10 w-2 h-2 bg-primary/20 rounded-full"></div>
+          <div className="floating-element absolute bottom-20 left-20 w-3 h-3 bg-accent/20 rounded-full" style={{ animationDelay: '2s' }}></div>
+          <div className="floating-element absolute top-1/2 right-1/4 w-1 h-1 bg-warning/30 rounded-full" style={{ animationDelay: '4s' }}></div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="py-6 border-t border-border/50">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              © {currentYear} JasurDev. All rights reserved.
+        <div className="mt-12 pt-8 border-t border-border">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <p className="text-muted-foreground text-sm">
+              © {new Date().getFullYear()} JasurDev. {t('footer.rights')}.
             </p>
-            <p className="text-sm text-muted-foreground mt-2 md:mt-0">
-              Built with React, TypeScript & Tailwind CSS
-            </p>
+            <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+              <span>Built with React & TypeScript</span>
+              <span>•</span>
+              <span>Powered by Passion</span>
+            </div>
           </div>
         </div>
       </div>
     </footer>
   );
 };
-
-export default Footer;

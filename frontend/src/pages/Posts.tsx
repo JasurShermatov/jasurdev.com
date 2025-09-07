@@ -1,213 +1,224 @@
-import { useState, useEffect } from 'react';
-import PostCard from '@/components/ui/post-card';
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, Loader } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { apiService, Post } from '@/services/api';
+import { PostCard } from '@/components/ui/PostCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, Filter, BookOpen } from 'lucide-react';
-import { usePosts } from '@/hooks/useApi';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { Post } from '@/services/api';
 
-const Posts = () => {
-  const { data: posts, isLoading, error } = usePosts();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+export const Posts: React.FC = () => {
+  const { t } = useLanguage();
+  const [posts, setPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
-  const [allTags, setAllTags] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTag, setSelectedTag] = useState<string>('');
 
-  // Extract unique tags from posts
   useEffect(() => {
-    if (posts) {
-      const tags = posts.flatMap(post => 
-        post.tags.map(tag => tag.name)
-      );
-      const uniqueTags = Array.from(new Set(tags));
-      setAllTags(uniqueTags);
-      setFilteredPosts(posts);
-    }
-  }, [posts]);
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        const postsData = await apiService.getPosts();
+        setPosts(postsData);
+        setFilteredPosts(postsData);
+      } catch (err) {
+        setError(t('common.error'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPosts();
+  }, [t]);
 
   // Filter posts based on search and tags
   useEffect(() => {
-    if (!posts) return;
-
     let filtered = posts;
 
-    if (searchTerm) {
+    if (searchQuery) {
       filtered = filtered.filter(post =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.content.toLowerCase().includes(searchTerm.toLowerCase())
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.content.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    if (selectedTags.length > 0) {
+    if (selectedTag) {
       filtered = filtered.filter(post =>
-        post.tags.some(tag => selectedTags.includes(tag.name))
+        post.tags.some(tag => tag.name === selectedTag)
       );
     }
 
     setFilteredPosts(filtered);
-  }, [posts, searchTerm, selectedTags]);
+  }, [posts, searchQuery, selectedTag]);
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev =>
-      prev.includes(tag)
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
+  // Get all unique tags from posts
+  const allTags = Array.from(
+    new Set(posts.flatMap(post => post.tags.map(tag => tag.name)))
+  );
+
+  const handleLike = (postId: number) => {
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { ...post, likes_count: post.likes_count + 1 }
+          : post
+      )
     );
   };
 
-  return (
-    <div className="min-h-screen pt-24">
-      {/* Header */}
-      <section className="py-16 hero-gradient">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center animate-fade-in">
-            <div className="inline-flex p-4 rounded-full bg-primary/10 mb-6">
-              <BookOpen className="h-8 w-8 text-primary" />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Tech <span className="gradient-text">Blog</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Sharing insights, tutorials, and thoughts about modern web development, programming best practices, 
-              and the latest technology trends.
-            </p>
-            <div className="text-center">
-              <span className="text-lg font-semibold text-primary">
-                {filteredPosts.length} Article{filteredPosts.length !== 1 ? 's' : ''} Available
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+  const handleCommentAdded = (postId: number) => {
+    // Reload posts to get updated comment count
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { ...post, comments_count: post.comments_count + 1 }
+          : post
+      )
+    );
+  };
 
-      {/* Search and Filters */}
-      <section className="py-8 bg-secondary/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-6">
-            {/* Search Bar */}
-            <div className="relative max-w-md mx-auto">
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader className="h-8 w-8 animate-spin mx-auto text-primary" />
+          <p className="text-muted-foreground">{t('common.loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive text-lg mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen py-20">
+      <div className="container mx-auto px-4 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4 gradient-text">
+            {t('posts.title')}
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Explore my thoughts, insights, and experiences in software development and technology.
+          </p>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search articles..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                type="text"
+                placeholder="Search posts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
 
-            {/* Topic Filter */}
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-4">
-                <Filter className="h-4 w-4 mr-2" />
-                <span className="text-sm font-medium">Filter by Topic:</span>
-              </div>
-              <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
+            {/* Tag Filter */}
+            <div className="flex items-center space-x-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <select
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value)}
+                className="px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="">All Tags</option>
                 {allTags.map(tag => (
-                  <Badge
-                    key={tag}
-                    variant={selectedTags.includes(tag) ? "default" : "secondary"}
-                    className="cursor-pointer transition-smooth hover:scale-105"
-                    onClick={() => toggleTag(tag)}
-                  >
-                    {tag}
-                  </Badge>
+                  <option key={tag} value={tag}>{tag}</option>
                 ))}
-              </div>
-              {selectedTags.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedTags([])}
-                  className="mt-4"
-                >
-                  Clear Filters
-                </Button>
-              )}
+              </select>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Posts Grid */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="space-y-4">
-                  <Skeleton className="aspect-video rounded-lg" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-20" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center py-20">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h3 className="text-2xl font-semibold mb-2">Failed to Load Posts</h3>
-              <p className="text-muted-foreground mb-6">
-                Please check your connection and try again.
-              </p>
-            </div>
-          ) : filteredPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post, index) => (
-                <div 
-                  key={post.id}
-                  className="animate-scale-in"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <PostCard {...post} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-2xl font-semibold mb-2">No Articles Found</h3>
-              <p className="text-muted-foreground mb-6">
-                Try adjusting your search criteria or clearing the filters.
-              </p>
-              <Button onClick={() => {
-                setSearchTerm('');
-                setSelectedTags([]);
-              }}>
-                Clear All Filters
-              </Button>
+          {/* Active Filters */}
+          {(searchQuery || selectedTag) && (
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-muted-foreground">Active filters:</span>
+              {searchQuery && (
+                <span className="px-2 py-1 bg-primary/10 text-primary rounded">
+                  Search: "{searchQuery}"
+                </span>
+              )}
+              {selectedTag && (
+                <span className="px-2 py-1 bg-accent/10 text-accent rounded">
+                  Tag: {selectedTag}
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedTag('');
+                }}
+                className="text-muted-foreground hover:text-foreground underline"
+              >
+                Clear all
+              </button>
             </div>
           )}
         </div>
-      </section>
 
-      {/* Newsletter Section */}
-      <section className="py-20 bg-secondary/30">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            Get notified when I publish new articles about web development and technology.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <Input 
-              placeholder="Enter your email"
-              className="flex-1"
-            />
-            <Button className="gradient-primary">
-              Subscribe
-            </Button>
+        {/* Posts Grid */}
+        {filteredPosts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📝</div>
+            <h3 className="text-xl font-semibold mb-2">No posts found</h3>
+            <p className="text-muted-foreground">
+              {searchQuery || selectedTag 
+                ? 'Try adjusting your filters or search terms.'
+                : 'Posts will appear here once they are published.'
+              }
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground mt-4">
-            No spam, unsubscribe at any time.
-          </p>
+        ) : (
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredPosts.map((post, index) => (
+              <div key={post.id} style={{ animationDelay: `${index * 0.1}s` }}>
+                <PostCard
+                  post={post}
+                  onLike={handleLike}
+                  onCommentAdded={handleCommentAdded}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center space-x-8 p-6 bg-gradient-hero rounded-2xl">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary mb-1">{posts.length}</div>
+              <div className="text-sm text-muted-foreground">Total Posts</div>
+            </div>
+            <div className="w-px h-8 bg-border"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-accent mb-1">
+                {posts.reduce((sum, post) => sum + post.likes_count, 0)}
+              </div>
+              <div className="text-sm text-muted-foreground">Total Likes</div>
+            </div>
+            <div className="w-px h-8 bg-border"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-warning mb-1">{allTags.length}</div>
+              <div className="text-sm text-muted-foreground">Topics Covered</div>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
-
-export default Posts;
