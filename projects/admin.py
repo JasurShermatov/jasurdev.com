@@ -85,7 +85,6 @@ class ProjectCommentAdmin(admin.ModelAdmin):
 
     short_content.short_description = "Content"
 
-    # Custom bulk delete action
     def delete_selected_comments(self, request, queryset):
         count = queryset.count()
         queryset.delete()

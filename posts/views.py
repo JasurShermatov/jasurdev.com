@@ -1,9 +1,9 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
 
-from .models import Post, PostComment, PostLike
+from .models import Post, PostLike
 from .serializers import (
     PostSerializer,
     PostCreateUpdateSerializer,
@@ -12,10 +12,6 @@ from .serializers import (
 
 
 class PostListCreateView(generics.ListCreateAPIView):
-    """
-    Postlar ro‘yxati va yangi post yaratish.
-    """
-
     queryset = Post.objects.all().prefetch_related("tags", "comments", "likes")
     permission_classes = [permissions.AllowAny]
 
@@ -26,10 +22,6 @@ class PostListCreateView(generics.ListCreateAPIView):
 
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Bitta postni ko‘rish, yangilash yoki o‘chirish.
-    """
-
     queryset = Post.objects.all().prefetch_related("tags", "comments", "likes")
     permission_classes = [permissions.AllowAny]
 
@@ -40,11 +32,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class CommentCreateView(generics.CreateAPIView):
-    """
-    Postga comment qo‘shish (anonim).
-    Endpoint: /api/posts/<id>/comments/
-    """
-
     serializer_class = PostCommentSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -55,11 +42,6 @@ class CommentCreateView(generics.CreateAPIView):
 
 
 class LikeToggleView(APIView):
-    """
-    Postga like/unlike qilish (IP orqali).
-    Endpoint: /api/posts/<id>/like/
-    """
-
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, pk):
@@ -75,7 +57,6 @@ class LikeToggleView(APIView):
         return Response({"detail": "Liked"}, status=status.HTTP_200_OK)
 
     def get_client_ip(self, request):
-        """Anonim foydalanuvchidan IP olish"""
         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
         if x_forwarded_for:
             ip = x_forwarded_for.split(",")[0]

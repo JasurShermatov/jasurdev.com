@@ -19,17 +19,33 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+
     path("api/home/", include("home.urls", namespace="home")),
     path("api/about-me/", include("aboutMe.urls", namespace="aboutMe")),
     path("api/posts/", include("posts.urls", namespace="posts")),
     path("api/projects/", include("projects.urls", namespace="projects")),
-    # Swagger / ReDoc
+
     path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path(
+        "redoc/",
+        schema_view.with_ui("redoc", cache_timeout=0),
+        name="schema-redoc",
+    ),
+
+    path(
+        "swagger.json",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
+    path(
+        "swagger.yaml",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-yaml",
+    ),
 ]
 
 if settings.DEBUG:

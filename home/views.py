@@ -10,12 +10,6 @@ from projects.serializers import ProjectSerializer
 
 
 class HomeView(APIView):
-    """
-    Landing page API:
-    - Home hero content
-    - Last 3 posts
-    - Last 3 projects
-    """
 
     def get(self, request, *args, **kwargs):
         home_content = Home.objects.first()  # Default bitta content bo‘ladi

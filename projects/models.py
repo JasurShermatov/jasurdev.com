@@ -3,8 +3,6 @@ from django.conf import settings
 
 
 class Tag(models.Model):
-    """Project tags"""
-
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
@@ -12,7 +10,6 @@ class Tag(models.Model):
 
 
 class Project(models.Model):
-    """User project model"""
 
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -44,7 +41,6 @@ class Project(models.Model):
 
 
 class ProjectLike(models.Model):
-    """Anonymous project likes via IP"""
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="likes")
     ip_address = models.GenericIPAddressField()
@@ -59,7 +55,6 @@ class ProjectLike(models.Model):
 
 
 class ProjectComment(models.Model):
-    """Anonymous project comments"""
 
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="comments"

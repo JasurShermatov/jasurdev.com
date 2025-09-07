@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Tag, Project, ProjectLike, ProjectComment
+
+from .models import Tag, Project, ProjectComment
 
 
 class TagSerializer(serializers.ModelSerializer):

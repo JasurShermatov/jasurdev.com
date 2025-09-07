@@ -1,12 +1,9 @@
 from rest_framework import serializers
-from .models import AboutMe, Skill
+
+from .models import AboutMe, Skill, Experience, Certificate
 
 
 class AboutMeSerializer(serializers.ModelSerializer):
-    """
-    Singleton About Me serializer.
-    Foydalanuvchiga faqat bitta record ko'rsatiladi.
-    """
 
     profile_image_url = serializers.SerializerMethodField(read_only=True)
     resume_url = serializers.SerializerMethodField(read_only=True)
@@ -37,16 +34,61 @@ class AboutMeSerializer(serializers.ModelSerializer):
 
 
 class SkillSerializer(serializers.ModelSerializer):
-    """
-    Skills / Technologies serializer.
-    Frontend uchun clean, faqat read-only maydonlar.
-    """
-
     image_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Skill
         fields = ("id", "name", "image_url", "experience_years", "proficiency")
+        read_only_fields = ("id",)
+
+    def get_image_url(self, obj):
+        request = self.context.get("request")
+        if obj.image and hasattr(obj.image, "url"):
+            return (
+                request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            )
+        return None
+
+
+class ExperienceSerializer(serializers.ModelSerializer):
+
+    period = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Experience
+        fields = (
+            "id",
+            "title",
+            "company",
+            "description",
+            "start_year",
+            "end_year",
+            "link",
+            "period",
+        )
+        read_only_fields = ("id",)
+
+    def get_period(self, obj):
+        return (
+            f"{obj.start_year} - {obj.end_year}"
+            if obj.end_year
+            else f"{obj.start_year} - Present"
+        )
+
+
+class CertificateSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Certificate
+        fields = (
+            "id",
+            "title",
+            "description",
+            "image_url",
+            "link",
+            "obtained_year",
+        )
         read_only_fields = ("id",)
 
     def get_image_url(self, obj):
