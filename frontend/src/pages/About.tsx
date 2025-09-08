@@ -211,15 +211,14 @@ export const About: React.FC = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {certificates.map((certificate, index) => (
               <Card key={certificate.id} className="p-6 group animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
-                {certificate.image_url && (
-                  <div className="mb-4 overflow-hidden rounded-lg">
-                    <img
-                      src={certificate.image_url}
-                      alt={certificate.title}
-                      className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                )}
+                          {certificate.image_url && (
+            <div className="mb-4 overflow-hidden rounded-lg">
+              <img
+                src={certificate.image_url}
+                alt={certificate.title}
+                  className="w-full max-h-[220px] aspect-[4/5] object-cover group-hover:scale-105 transition-transform duration-300"              />
+            </div>
+          )}
                 
                 <div className="space-y-3">
                   <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">

@@ -12,9 +12,7 @@ def profile_image_upload_path(instance, filename):
 def skill_image_upload_path(instance, filename):
     return f"about_me/skills/{filename}"
 
-
 class AboutMe(models.Model):
-
     intro_text = models.TextField(blank=True, help_text="Short intro about yourself")
     resume = models.FileField(
         upload_to=resume_upload_path,
@@ -37,13 +35,13 @@ class AboutMe(models.Model):
     def __str__(self):
         return "About Me"
 
-
 class Skill(models.Model):
 
     name = models.CharField(max_length=100)
     image = models.ImageField(upload_to=skill_image_upload_path, blank=True, null=True)
-    experience_years = models.PositiveSmallIntegerField(
-        default=0, help_text="Years of experience"
+    experience_years = models.DecimalField(
+        max_digits=4, decimal_places=1,
+        default=0.0,
     )
     proficiency = models.PositiveSmallIntegerField(
         default=0, help_text="Proficiency in % (0-100)"

@@ -11,7 +11,7 @@ export const Home: React.FC = () => {
 
   const texts = [
     'Software Engineer',
-    'Full Stack Developer', 
+    'Backend Developer',
     'Problem Solver',
     'Tech Enthusiast'
   ];
@@ -66,9 +66,9 @@ export const Home: React.FC = () => {
   ];
 
   const techStats = [
-    { label: 'Years of Experience', value: '5+', icon: Terminal },
-    { label: 'Projects Completed', value: '50+', icon: Code },
-    { label: 'Technologies', value: '20+', icon: Cpu },
+    { label: 'Years of Experience', value: '2+', icon: Terminal },
+    { label: 'Projects Completed', value: '10+', icon: Code },
+    { label: 'Technologies', value: '15+', icon: Cpu },
   ];
 
   return (

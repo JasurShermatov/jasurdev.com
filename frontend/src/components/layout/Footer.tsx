@@ -68,9 +68,38 @@ export const Footer: React.FC = () => {
 
           {/* Additional Info */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg text-foreground">Technologies</h3>
+            <h3 className="font-semibold text-lg text-foreground">Technologies & Libraries Tools & DevOps</h3>
             <div className="flex flex-wrap gap-2">
-              {['React', 'TypeScript', 'Node.js', 'Python', 'Django'].map((tech) => (
+              {[
+  // Core
+  'Python',
+  'Django & DRF',
+  'FastAPI',
+  'PostgreSQL',
+
+  // Messaging & Async
+  'Celery',
+  'Redis',
+  'Django Channels',
+
+  // DevOps & Deployment
+  'Docker',
+  'Nginx',
+  'Gunicorn',
+  'Uvicorn',
+
+  // Tools
+  'Git & GitHub',
+  'GitHub Actions (CI/CD)',
+  'Postman',
+  'Linux (Ubuntu)',
+
+  // Telegram
+  'Aiogram',
+  'python-telegram-bot',
+
+
+].map((tech) => (
                 <span
                   key={tech}
                   className="px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm font-medium"
@@ -96,9 +125,9 @@ export const Footer: React.FC = () => {
               © {new Date().getFullYear()} JasurDev. {t('footer.rights')}.
             </p>
             <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-              <span>Built with React & TypeScript</span>
-              <span>•</span>
-              <span>Powered by Passion</span>
+              {/*<span>Built with React & TypeScript</span>*/}
+              {/*<span>•</span>*/}
+              {/*<span>Powered by Passion</span>*/}
             </div>
           </div>
         </div>

@@ -41,6 +41,7 @@ export interface PostTag {
   name: string;
 }
 
+// Types
 export interface PostComment {
   id: number;
   content: string;
@@ -49,6 +50,7 @@ export interface PostComment {
 
 export interface Post {
   id: number;
+  uuid: string; // UUID qo‘shildi
   title: string;
   content: string;
   image?: string;
@@ -65,6 +67,7 @@ export interface ProjectTag {
   name: string;
 }
 
+
 export interface ProjectComment {
   id: number;
   content: string;
@@ -73,6 +76,7 @@ export interface ProjectComment {
 
 export interface Project {
   id: number;
+  uuid: string; // UUID qo‘shildi
   title: string;
   description: string;
   image?: string;
@@ -87,7 +91,7 @@ export interface Project {
   updated_at: string;
 }
 
-// API Client Class
+// API Service
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -104,6 +108,18 @@ class ApiService {
 
     return response.json();
   }
+    // Posts
+  async likePost(uuid: string): Promise<void> {
+    await this.request(`/posts/${uuid}/like/`, { method: 'POST' });
+  }
+
+  async addPostComment(uuid: string, content: string): Promise<PostComment> {
+    return this.request<PostComment>(`/posts/${uuid}/comments/`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    });
+  }
+
 
   // About Me API
   async getAboutMe(): Promise<AboutMe> {
@@ -127,36 +143,28 @@ class ApiService {
     return this.request<Post[]>('/posts/');
   }
 
-  async getPost(id: number): Promise<Post> {
-    return this.request<Post>(`/posts/${id}/`);
+  async getPost(uuid: string): Promise<Post> {
+    return this.request<Post>(`/posts/${uuid}/`);
   }
 
-  async likePost(id: number): Promise<void> {
-    await this.request(`/posts/${id}/like/`, { method: 'POST' });
-  }
 
-  async addPostComment(postId: number, content: string): Promise<PostComment> {
-    return this.request<PostComment>(`/posts/${postId}/comments/`, {
-      method: 'POST',
-      body: JSON.stringify({ content }),
-    });
-  }
 
   // Projects API
   async getProjects(): Promise<Project[]> {
     return this.request<Project[]>('/projects/');
   }
 
-  async getProject(id: number): Promise<Project> {
-    return this.request<Project>(`/projects/${id}/`);
+  async getProject(uuid: string): Promise<Project> {
+    return this.request<Project>(`/projects/${uuid}/`);
   }
 
-  async likeProject(id: number): Promise<void> {
-    await this.request(`/projects/${id}/like/`, { method: 'POST' });
+  // Projects
+  async likeProject(uuid: string): Promise<void> {
+    await this.request(`/projects/${uuid}/like/`, { method: 'POST' });
   }
 
-  async addProjectComment(projectId: number, content: string): Promise<ProjectComment> {
-    return this.request<ProjectComment>(`/projects/${projectId}/comments/`, {
+  async addProjectComment(uuid: string, content: string): Promise<ProjectComment> {
+    return this.request<ProjectComment>(`/projects/${uuid}/comments/`, {
       method: 'POST',
       body: JSON.stringify({ content }),
     });

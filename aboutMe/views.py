@@ -13,7 +13,6 @@ class AboutMeView(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_object(self):
-        # Singleton: faqat bitta record
         obj, created = AboutMe.objects.get_or_create(pk=1)
         return obj
 
